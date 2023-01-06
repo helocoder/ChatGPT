@@ -1,0 +1,48 @@
+import whisper
+import gradio as gr
+import time
+from pyChatGPT import ChatGPT
+import warnings
+
+warnings.filterwarnings("ignore")
+session_token = "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..q8bW1f99XXLLEVIb.mdYkeJzPCc9YqEyBz9WyBe6iChYvg3KIJm4HuqLRGC7dPRU_TfR9YfSfB5fIC-G8Rxr_cX4zDynqmSc941pNGUU6gl-lHCBwfuWwhsdqtUO_iDcsPwOamJxNcmCSsxCQNF3QcamuXtgPkDW5x5Do_WSP-NZi0uNHMk9NfN4TMf9zH7xZprwR81dw4TP7mPMbsRH7zMVVMcY7SarvfGKDwb9cWMLPtyZCOyrEIlUzWb42Gx16ebtS3lwXTv-zVv_qGcoxqBwg1Da-JScytAQ0kfgaCGAlnZs2d6gG3B31Fn9GaGV3bDeRoD4vCsYHc3qrQJ3-73g1PnqQr5aV5ZtKPYiPEkGwJEarGBqC2yIFyKqyH9ooMymkILhoOBw9kXgwvdJgc8-4Wg02sLsI00YN-YSGUywWiPGu5cNmsjSdRCt0jX2EqLwedeoKSq05oPY3rwL4CHL2BIZ8dXA9idJ8OhyAIrYWriahQuslsXRj4s_MWbRjXvAlGCUTbKzVTMyahfDETT8rtBjdDnyzo6oM8Zs7ylRYpVTWEcaZVur4yQhoxivIhfayKQ_CAqObo-SsKLD0g2WTcTrcTRHXZqnWshPxtkzuISxcZ5tvXCgTguCqKCYQCdjT4Q-l4w8i499GzFlgspLTiOnfJcxZvpqJ1aDkGZvF8R6q9Erph58H3bqVt9nc0EfeH3sY7DdEm7Gv92jx9P3SRDG1larzR0l7x6wCI1rRCE3XGzWrGtqmwIdRwYLKHNGR2Ke4rmxMF2qHlcme-Sa0s2R06i_4vPmw9q2XAoXBRNc5KFv1NoefAohbE3iiLFT5lFTmtrUiVjBS28C89OZ6BREKWAdPiRoFzAy_BW_mDp1yPiXmnslKrNXO3zzcqDPclKluscleEm8-qF4fVRUciCI6QBMG-yDs_P4tGW7c0Cip84P2jTUAHLQfGrSbY4CoDEuG5LwhPgTdwft8PRadVGreYSz5hZUpMBx_F2RdQh8IpnVgXYZqJtDqMfFaiqdQWkxxEscJ2rrw9JzdFhmPgu_R6yDR9Lhg0rlrdHG4-blx4DtiI45XAb5vwCCG39ogAIVsVWw3zAJmH_93vwcFpMFI3fKGW01Xb5QyrF1utAKQ7383vaIro9PEMXc_3T2y9asPwxu54EoiatgyknUCZU2Y8WSk9LelVN1jJ1KTeAL4euF7m8lmL_RzPSOwQOwjTrTsLSW96jo-PvlPkcAeZvzpbxlvHpH0ImyUOcu7-H6g8VtyWUlo12ee5nmD-_87qlijpu24d0b6ZIIBkkiW8T5nWxiCmqRLnrKwjxy-aueddsz19W5F1j4UISLGvN82Su50JM9TioUpZbUKhRiXblyKdwa0tG5HD7y4MB-8lyPwUJ2C5uD-SWO_DbET9ARcI_MKIT8yXQeWagI-JSc3TWrJY9dl4SOSkBV5xXKG7ccO9EcaTmXWiDZyBqSBgS8xMa0k2a6EFS_N1mg3eth50RBEZLGHznN_2JhmoC-BEylV8SUYixpGTYBidRx9Bq-AlcrPRx1woq6GmYKrevl_MWYrEcGSxkWIoCrTUlfpVTbP-qX4jaEJyFdFycmTuB5FZ5Uv8eo2JB6ofywX8VHUUEx5uRUeVil_JftJYsCAfMJwfoJRuddIaUgbvUkDEp6tB5yPdljBGx4b-WpZ4BEWsCvLAVVwBngNIRuJflpurQuggGqrkrdFC9L-rxtrLXtpPwvUIOvr05s0f2kGjplbuYXe3OVcv-NgVluzMH8GDCLKQJGn_Cc4wIa_pAMhI_al1c0em4cX1LA_uGxseJApYOwtD-emf8FAt8m8b9D6NihbdIP9floGZwnyoi6KS3Plr80v9PBlnyzwAYwN6_CNFVgLkET_aSMCOBN6szVp4q0ifHZF5dQM_IQHRXKgyUHCozWbqPOuphc-OcXa0fYMVwQHOgM7LoYbn-bt7IsU6nLCkj7ixNfNj9amR1_AKlawZYyZCB4vxmy-QsG_5MMbvOcNBjwohSrz8jAop88iOtP98syU5rxg0VX3PMOGR87ytfDTEr9N_1Vm2YqvHsQfOWbWpgnhxntZ0F0JVY5A5jKjfCfTlc49GMP4TemU3C2T-rV682pr2uMF4QL9ap5MrvNXQzIf5kkWGzOSO9JoMFFWhbzKG9IHUSqrQsc7Ao-psmqbvbyntBqxOCjffY4lhp_Nlb2Jl2TG_uRuZ-gZgjamVOur6fu_KTXIcFmBlJNH2Fun36QRTuR3AAdsZZqHE9f5iKfJEJ6CWmJNG1HaoiWoUE_i3GTWuA.YQ0mqw7aGIlXoKJVSPxdSA"
+
+model = whisper.load_model("base")
+
+model.device
+
+def trascribe(audio):
+  #load audio and pad/trim it to fit 30 seconds
+  audio = whisper.load_audio(audio)
+  audio = whisper.pad_or_trim(audio)
+
+#trim log-mel
+  mel = whisper.log_mel_spectrogram(audio).to(model.device)
+
+#detect the spoken lang
+  _, probs = model.detect_language(mel)
+
+#decode the audio
+  options = whisper.DecodingOptions()
+  result = whisper.decode(model,mel,options)
+  result_text = result.text
+#pass generated audio
+  chatgpt_api = ChatGPT(session_token)
+  resp = chatgpt_api.send_message(result_text)
+  out_result = resp['message']
+  return [result_text,out_result]
+
+#gradio For ui
+output_1 = gr.Textbox(label="Speech to text")
+output_2 = gr.Textbox(label="chatGPT output")
+
+gr.Interface(
+    title = "openAI whiper ASR Gradio WEB UI",
+    fn=trascribe,
+    inputs=[
+        gr.inputs.Audio(source="microphone",type="filepath")
+    ],
+    outputs=[
+        output_1, output_2
+    ],
+    live = True,debug = True).launch()
